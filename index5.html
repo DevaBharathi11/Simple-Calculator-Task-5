@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Calculator </title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #fafafa;
+            font-family: 'Courier New', monospace;
+        }
+
+        .calculator {
+            background-color: #f5f5f5;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 320px;
+            border: 1px solid #ccc;
+        }
+
+        .display {
+            background-color: #000;
+            color: #0f0;
+            font-size: 2.5em;
+            text-align: right;
+            padding: 15px;
+            border-bottom: 2px solid #ccc;
+            box-sizing: border-box;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .btn {
+            background-color: #e0e0e0;
+            border: 1px solid #bbb;
+            padding: 20px;
+            font-size: 1.5em;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #d3d3d3;
+            transform: scale(1.05);
+        }
+
+        .operator {
+            background-color: #ffb300;
+            color: #000;
+        }
+
+        .operator:hover {
+            background-color: #ffa000;
+        }
+
+        .equal {
+            background-color: #00897b;
+            color: #fff;
+            grid-column: span 4;
+        }
+
+        .equal:hover {
+            background-color: #00796b;
+        }
+
+        .clear {
+            background-color: #e53935;
+            color: #fff;
+        }
+
+        .clear:hover {
+            background-color: #d32f2f;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="calculator">
+        <div class="display" id="display">0</div>
+        <div class="buttons">
+            <button class="btn" data-value="7">7</button>
+            <button class="btn" data-value="8">8</button>
+            <button class="btn" data-value="9">9</button>
+            <button class="btn operator" data-value="/">÷</button>
+
+            <button class="btn" data-value="4">4</button>
+            <button class="btn" data-value="5">5</button>
+            <button class="btn" data-value="6">6</button>
+            <button class="btn operator" data-value="*">×</button>
+
+            <button class="btn" data-value="1">1</button>
+            <button class="btn" data-value="2">2</button>
+            <button class="btn" data-value="3">3</button>
+            <button class="btn operator" data-value="-">−</button>
+
+            <button class="btn" data-value="0">0</button>
+            <button class="btn" data-value=".">.</button>
+            <button class="btn clear" data-value="clear">C</button>
+            <button class="btn operator" data-value="+">+</button>
+
+            <button class="btn equal" data-value="=">=</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const display = document.getElementById('display');
+            const buttons = document.querySelectorAll('.btn');
+            let currentInput = '0';
+            let expression = '';
+
+            buttons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const value = this.getAttribute('data-value');
+
+                    if (value === 'clear') {
+                        currentInput = '0';
+                        expression = '';
+                        updateDisplay(currentInput);
+                    } else if (value === '=') {
+                        try {
+                            const result = evaluateExpression(expression);
+                            currentInput = result.toString();
+                            expression = currentInput;
+                            updateDisplay(currentInput);
+                        } catch (error) {
+                            currentInput = 'Error';
+                            expression = '';
+                            updateDisplay(currentInput);
+                        }
+                    } else {
+                        if (['+', '-', '*', '/'].includes(value)) {
+                            if (expression.endsWith('+') || expression.endsWith('-') || expression.endsWith('*') || expression.endsWith('/')) {
+                                expression = expression.slice(0, -1);
+                            }
+                        }
+                        currentInput = currentInput === '0' && value !== '.' ? value : currentInput + value;
+                        expression += value;
+                        updateDisplay(expression);
+                    }
+                });
+            });
+
+            function evaluateExpression(expr) {
+                return Function('"use strict";return (' + expr + ')')();
+            }
+
+            function updateDisplay(value) {
+                display.textContent = value;
+            }
+        });
+    </script>
+</body>
+
+</html>
